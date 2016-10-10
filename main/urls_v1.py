@@ -12,4 +12,6 @@ router.register(r'social_accounts', views.SocialAccountViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
+    url(r'^cart/$', views.CartView.as_view()),
+
 ]

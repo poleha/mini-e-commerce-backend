@@ -50,7 +50,7 @@ class Product(models.Model):
 
 class ProductInCart(models.Model):
     added = models.DateTimeField(auto_now_add=True)
-    product = models.ForeignKey(Product)
+    product = models.ForeignKey(Product, related_name='carts')
     user = models.ForeignKey(User)
     purchased = models.BooleanField(default=False, blank=True)
     purchase_time = models.DateTimeField(null=True, blank=True)

@@ -1,0 +1,12 @@
+{% load i18n %}{% autoescape off %}
+{% trans "You've purchased following products:" %}
+
+{% for cart in carts %}
+{{ cart.product.title }}
+{% endfor %}
+
+{% trans "Thanks for using our site!" %}
+
+{% blocktrans %}The {{ site_name }} team{% endblocktrans %}
+
+{% endautoescape %}

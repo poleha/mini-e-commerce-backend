@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api/v1/', include('main.urls_v1')),
+    url(r'^api/v1/auth/', include('djoser.urls.authtoken')),
 ]
