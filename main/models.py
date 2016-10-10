@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser, User
 from django.utils.translation import ugettext_lazy as _
 
 FACEBOOK = 'facebook'
@@ -21,11 +21,10 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='user_profile')
     account_type = models.PositiveIntegerField(choices=ACCOUNT_TYPES, verbose_name=_('Account type'))
     email_confirmed = models.BooleanField(default=False)
-
+    receive_email_notifications = models.BooleanField(default=True)
 
 class VendorProfile(models.Model):
     user = models.OneToOneField(User, related_name='vendor_profile')
-    receive_email_notifications = models.BooleanField(default=True)
     business_name = models.CharField(max_length=3000)
     location = models.CharField(max_length=3000)
     description = models.TextField()
@@ -43,6 +42,7 @@ class Product(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, related_name='products')
+    title = models.CharField(max_length=1000)
     body = models.TextField(null=True, blank=True)
     price = models.PositiveIntegerField(verbose_name=_('Price'))
     expire_date = models.DateTimeField(verbose_name=_('Expire date'))
@@ -52,5 +52,8 @@ class ProductInCart(models.Model):
     added = models.DateTimeField(auto_now_add=True)
     product = models.ForeignKey(Product)
     user = models.ForeignKey(User)
+    purchased = models.BooleanField(default=False, blank=True)
+    purchase_time = models.DateTimeField(null=True, blank=True)
 
-
+User.is_vendor = lambda self: self.user_profile.account_type == ACCOUNT_TYPE_VENDOR
+AnonymousUser.is_vendor = lambda self: False

@@ -3,7 +3,8 @@ from main import views
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-router.register(r'products', views.ProductViewSet)
+router.register(r'user_products', views.ProductUserViewSet, 'user_products')
+router.register(r'vendor_products', views.ProductVendorViewSet, 'vendor_products')
 router.register(r'products_in_cart', views.ProductInCartViewSet)
 router.register(r'user_profiles', views.UserProfileViewSet)
 router.register(r'vendor_profiles', views.VendorProfileViewSet)
