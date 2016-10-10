@@ -1,0 +1,8 @@
+Users sign up via Facebook API
+Users can sign up as VENDORS or CUSTOMERS
+Vendors can create profile pages for their business
+vendors can post PRODUCTS to be sold with a price for their business. Products will EXPIRE with some date and no longer be available on the view of this vendor profile page
+USERS can search for PRODUCTS and can filter this search by price
+USERS can buy products by adding to a cart and be notified via EMAIL that they purchased products
+vendor profile page should include BUSINESS NAME, LOCATION, DESCRIPTION, and it should include a list of their products
+user can sign up directly not via Facebook api

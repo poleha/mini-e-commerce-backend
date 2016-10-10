@@ -91,3 +91,6 @@ ENV/
 
 #***********
 .idea/
+
+*/migrations*
+*.sqlite3
