@@ -20,8 +20,6 @@ ACCOUNT_TYPES = (
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='user_profile')
     account_type = models.PositiveIntegerField(choices=ACCOUNT_TYPES, verbose_name=_('Account type'))
-    email_confirmed = models.BooleanField(default=False)
-    receive_email_notifications = models.BooleanField(default=True)
 
 class VendorProfile(models.Model):
     user = models.OneToOneField(User, related_name='vendor_profile')
