@@ -17,7 +17,6 @@ from rest_framework.serializers import ValidationError
 from rest_framework.authtoken.models import Token
 from django.utils.translation import ugettext_lazy as _
 
-
 class BaseProductViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
 
     queryset = Product.objects.all()
@@ -46,6 +45,17 @@ class ProductInCartViewSet(viewsets.ModelViewSet):
     queryset = ProductInCart.objects.all()
     serializer_class = ProductInCartSerializer
     permission_classes = (OwnerOnlyPermission,)
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        product = serializer.validated_data.get('product')
+        if user.is_authenticated() and not product.is_expired() and \
+                not ProductInCart.objects.filter(product=product, user=user, purchased=False).exists():
+            serializer.save(user=user)
+        else:
+            raise ValidationError(_('Unable to add product to cart'))
+
+
 
 
 class UserProfileViewSet(viewsets.ModelViewSet):
@@ -92,6 +102,20 @@ class CartView(views.APIView):
         return ProductInCart.objects.filter(user=user, purchased=False)
 
     @transaction.atomic()
+    def delete(self, request):
+        user = request.user
+        product_pk = request.data.get('product')
+        ProductInCart.objects.filter(user=user, product_id=product_pk, purchased=False).delete()
+        queryset = ProductInCart.objects.filter(user=user, purchased=False)
+        serializer = ProductInCartSerializer(queryset, many=True)
+        return Response(
+            {
+            'results': serializer.data,
+            'count': queryset.count()
+            }
+        )
+
+    @transaction.atomic()
     def post(self, request):
         user = request.user
         carts = self.get_carts(user)
@@ -111,7 +135,11 @@ class CartView(views.APIView):
         user = request.user
         carts = self.get_carts(user)
         serializer = ProductInCartSerializer(carts, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({
+            'results': serializer.data,
+            'count': carts.count()
+        },
+            status=status.HTTP_200_OK)
 
 
 class RegistrationView(generics.CreateAPIView):
@@ -181,12 +209,9 @@ class GetUserInfo(views.APIView):
         token_serializer = TokenSerializer(user.auth_token)
         user_serializer = UserSerializer(user)
         user_profile_serializer = UserProfileSerializer(user.user_profile)
-        if user.is_vendor():
-            #TODO fix
-            vendor_profile, created = VendorProfile.objects.get_or_create(user=user)
-            vendor_profile_serializer = VendorProfileSerializer(vendor_profile)
-        else:
-            vendor_profile_serializer = None
+        #TODO fix
+        vendor_profile, created = VendorProfile.objects.get_or_create(user=user)
+        vendor_profile_serializer = VendorProfileSerializer(vendor_profile)
 
         return Response({
            'user': user_serializer.data,

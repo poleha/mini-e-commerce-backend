@@ -19,6 +19,8 @@ class ProductSerializer(serializers.ModelSerializer):
     validate_user = validate_user
 
 class ProductInCartSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.id')
+    title = serializers.ReadOnlyField(source='product.title')
 
     class Meta:
         model = ProductInCart
@@ -68,9 +70,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
             Token.objects.get_or_create(user=user)
             user_profile = UserProfile(user=user, account_type = account_type)
             user_profile.save()
-
-            if account_type == ACCOUNT_TYPE_VENDOR:
-                VendorProfile.objects.get_or_create(user=user)
+            #TODO fix
+            VendorProfile.objects.get_or_create(user=user)
         return user
 
     def validate(self, data):
@@ -96,3 +97,4 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'email')
+

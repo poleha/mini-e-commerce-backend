@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AnonymousUser, User
 from django.utils.translation import ugettext_lazy as _
+from django.utils.timezone import now
 
 FACEBOOK = 'facebook'
 
@@ -44,6 +45,9 @@ class Product(models.Model):
     body = models.TextField(null=True, blank=True)
     price = models.PositiveIntegerField(verbose_name=_('Price'))
     expire_date = models.DateTimeField(verbose_name=_('Expire date'))
+
+    def is_expired(self):
+        return self.expire_date <= now()
 
 
 class ProductInCart(models.Model):
