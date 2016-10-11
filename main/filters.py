@@ -10,6 +10,7 @@ class ProductFilter(filters.FilterSet):
         fields = {
             'price': ['lte', 'gte'],
             'title': ['icontains'],
+            'user__vendor_profile': ['isequal']
         }
 
     #def show_expired_filter(self, queryset, name, value):

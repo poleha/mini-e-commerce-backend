@@ -17,5 +17,6 @@ urlpatterns = [
     url(r'^registration/$', views.RegistrationView.as_view()),
     url(r'^obtain_auth_token/', obtain_auth_token),
     url(r'^social_login/$', views.SocialLoginView.as_view()),
+    url(r'^get_user_info/$', views.GetUserInfo.as_view()),
 
 ]

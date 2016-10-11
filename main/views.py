@@ -2,7 +2,7 @@ from rest_framework import filters
 from main.models import Product, ProductInCart, UserProfile, VendorProfile, SocialAccount
 from main.serializers import ProductSerializer, ProductInCartSerializer,\
     UserProfileSerializer, VendorProfileSerializer, SocialAccountSerializer,\
-    RegistrationSerializer, TokenSerializer, SocialLoginSerializer
+    RegistrationSerializer, TokenSerializer, SocialLoginSerializer, UserSerializer
 from .filters import ProductFilter
 from django.utils.timezone import now
 from .permissions import OwnerOnlyPermission, VendorOnlyPermission, OwnerOrReadOnlyPermission
@@ -171,3 +171,26 @@ class SocialLoginView(views.APIView):
             return self.login_user(serializer.data)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class GetUserInfo(views.APIView):
+
+    def get(self, request):
+        user = request.user
+        if not user.is_authenticated():
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        token_serializer = TokenSerializer(user.auth_token)
+        user_serializer = UserSerializer(user)
+        user_profile_serializer = UserProfileSerializer(user.user_profile)
+        if user.is_vendor():
+            #TODO fix
+            vendor_profile, created = VendorProfile.objects.get_or_create(user=user)
+            vendor_profile_serializer = VendorProfileSerializer(vendor_profile)
+        else:
+            vendor_profile_serializer = None
+
+        return Response({
+           'user': user_serializer.data,
+            'token': token_serializer.data,
+            'user_profile': user_profile_serializer.data,
+            'vendor_profile': vendor_profile_serializer.data,
+        })
